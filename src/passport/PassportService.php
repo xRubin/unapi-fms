@@ -8,9 +8,6 @@ use unapi\fms\common\AbstractService;
 use unapi\fms\common\AudioAnticaptcha;
 use unapi\fms\common\QueryInterface;
 
-/**
- * Class PassportService
- */
 class PassportService extends AbstractService
 {
     /**
@@ -32,7 +29,7 @@ class PassportService extends AbstractService
      * @param ClientInterface $client
      * @return PromiseInterface
      */
-    protected function initialPage(ClientInterface $client)
+    protected function initialPage(ClientInterface $client): PromiseInterface
     {
         return $client->requestAsync('GET', '/info-service.htm?sid=2000');
     }
@@ -43,7 +40,7 @@ class PassportService extends AbstractService
      * @param string $code
      * @return PromiseInterface
      */
-    protected function submitForm(ClientInterface $client, QueryInterface $query, string $code)
+    protected function submitForm(ClientInterface $client, QueryInterface $query, string $code): PromiseInterface
     {
         /** @var PassportQuery $query */
 
