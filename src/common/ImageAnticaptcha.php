@@ -27,13 +27,11 @@ class ImageAnticaptcha implements AnticaptchaInterface
     {
         return $client->requestAsync('GET', '/services/captcha.jpg')
             ->then(function (ResponseInterface $response) {
-
-                // todo: universal format
-                return $this->service->resolve(new ImageTask($response->getBody()->getContents(), [
-                    'numeric' => 1,
-                    'min_len' => 6,
-                    'max_len' => 6,
-                    'ext' => 'jpg',
+                return $this->service->resolve(new ImageTask([
+                    'body' => $response->getBody()->getContents(),
+                    'numeric' => ImageTask::NUMERIC_ONLY_DIGITS,
+                    'minLength' => 6,
+                    'maxLength' => 6
                 ]));
             });
     }
