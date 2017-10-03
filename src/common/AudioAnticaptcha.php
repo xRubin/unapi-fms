@@ -10,6 +10,7 @@ use Psr\Http\Message\ResponseInterface;
 use unapi\anticaptcha\common\AnticaptchaInterface;
 
 use function GuzzleHttp\Promise\unwrap;
+use unapi\anticaptcha\common\dto\CaptchaSolvedDto;
 
 class AudioAnticaptcha implements AnticaptchaInterface
 {
@@ -51,7 +52,7 @@ class AudioAnticaptcha implements AnticaptchaInterface
             if (strpos($code, '-') !== false)
                 return new RejectedPromise('Captcha not solved');
 
-            return new FulfilledPromise($code);
+            return new FulfilledPromise(CaptchaSolvedDto::toDto(['code' => $code]));
         });
     }
 }

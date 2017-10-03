@@ -6,24 +6,19 @@ use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
 use unapi\anticaptcha\common\AnticaptchaInterface;
-use Psr\Http\Message\ResponseInterface;
-use GuzzleHttp\ClientInterface;
-use GuzzleHttp\Promise\PromiseInterface;
+use unapi\interfaces\ServiceInterface;
 
 /**
  * Class AbstractService
  */
-abstract class AbstractService implements LoggerAwareInterface
+abstract class AbstractFmsService implements ServiceInterface, LoggerAwareInterface
 {
     /** @var FmsClient */
     private $client;
     /** @var AnticaptchaInterface */
     private $anticaptcha;
-    /** @var StatusFactoryInterface */
-    private $statusFactory;
     /** @var LoggerInterface */
     private $logger;
-
 
     /**
      * @param array $config Service configuration settings.
@@ -53,14 +48,6 @@ abstract class AbstractService implements LoggerAwareInterface
         } else {
             throw new \InvalidArgumentException('Anticaptcha must be instance of AnticaptchaInterface');
         }
-
-        if (!isset($config['statusFactory'])) {
-            throw new \InvalidArgumentException('Status factory required');
-        } elseif ($config['statusFactory'] instanceof StatusFactoryInterface) {
-            $this->statusFactory = $config['statusFactory'];
-        } else {
-            throw new \InvalidArgumentException('Status factory must be instance of StatusFactoryInterface');
-        }
     }
 
     /**
@@ -72,32 +59,18 @@ abstract class AbstractService implements LoggerAwareInterface
     }
 
     /**
-     * @param QueryInterface $query
-     * @return PromiseInterface
+     * @return FmsClient
      */
-    public function getQueryPromise(QueryInterface $query): PromiseInterface
+    public function getClient(): FmsClient
     {
-        return $this->initialPage($this->client)->then(function (ResponseInterface $response) use ($query) {
-            return $this->anticaptcha->getAnticaptchaPromise($this->client, $response)->then(function (string $code) use ($query) {
-                return $this->submitForm($this->client, $query, $code)->then(function (ResponseInterface $response) {
-                    return $this->statusFactory->factory($response->getBody()->getContents());
-                });
-            });
-        });
+        return $this->client;
     }
 
     /**
-     * @param ClientInterface $client
-     * @return PromiseInterface
+     * @return AnticaptchaInterface
      */
-    abstract protected function initialPage(ClientInterface $client): PromiseInterface;
-
-    /**
-     * @param ClientInterface $client
-     * @param QueryInterface $query
-     * @param string $code
-     * @return PromiseInterface
-     */
-    abstract protected function submitForm(ClientInterface $client, QueryInterface $query, string $code): PromiseInterface;
-
+    public function getAnticaptcha(): AnticaptchaInterface
+    {
+        return $this->anticaptcha;
+    }
 }

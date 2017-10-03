@@ -1,9 +1,10 @@
 <?php
-namespace unapi\fms\passport;
 
-use unapi\fms\common\QueryInterface;
+namespace unapi\fms\passport\dto;
 
-class PassportQuery implements QueryInterface
+use unapi\interfaces\DtoInterface;
+
+class PassportDto implements PassportInterface
 {
     /** @var string */
     private $series;
@@ -36,5 +37,14 @@ class PassportQuery implements QueryInterface
     public function getNumber(): string
     {
         return $this->number;
+    }
+
+    /**
+     * @param array $data
+     * @return static
+     */
+    public static function toDto(array $data): DtoInterface
+    {
+        return new PassportDto($data['series'], $data['number']);
     }
 }
