@@ -19,8 +19,8 @@ class PassportDto implements PassportInterface
      */
     public function __construct($series, $number)
     {
-        $this->series = sprintf('%04s', $series);
-        $this->number = sprintf('%06s', $number);
+        $this->series = sprintf('%04s', preg_replace('/[^0-9]/', '', $series));
+        $this->number = sprintf('%06s', preg_replace('/[^0-9]/', '', $number));
     }
 
     /**
